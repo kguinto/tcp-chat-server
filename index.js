@@ -26,7 +26,7 @@ const server = new Server()
 
           if (nicknameIsTaken) {
             socket.write(
-              'That nickname is taken. Please choose anotherz nickname.\n'
+              'That nickname is taken. Please choose another nickname.\n'
             );
           } else {
             // User joins server
