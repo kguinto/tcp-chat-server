@@ -34,6 +34,14 @@ class Chatroom {
       connection.socket.write(text + '\n');
     });
   }
+
+  removeConnection(connection) {
+    if (connection.nickname && this.hasNickname(connection.nickname)) {
+      delete this.connections[connection.nickname];
+
+      this.broadcast(`${connection.nickname} has disconnected.`);
+    }
+  }
 }
 
 module.exports = Chatroom;

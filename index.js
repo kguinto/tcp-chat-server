@@ -14,30 +14,34 @@ const server = new Server()
 
     const connection = new Connection({ socket });
 
-    socket.on('data', res => {
-      const response = res.toString().trim();
+    socket
+      .on('data', res => {
+        const response = res.toString().trim();
 
-      if (!connection.nickname) {
-        // Check if nickname is taken
-        const nicknameIsTaken = chatroom.hasNickname(response);
+        if (!connection.nickname) {
+          // Check if nickname is taken
+          const nicknameIsTaken = chatroom.hasNickname(response);
 
-        if (nicknameIsTaken) {
-          socket.write(
-            'That nickname is taken. Please choose anotherz nickname.\n'
-          );
+          if (nicknameIsTaken) {
+            socket.write(
+              'That nickname is taken. Please choose anotherz nickname.\n'
+            );
+          } else {
+            // User joins server
+            connection.nickname = response;
+
+            chatroom.addConnection(connection);
+          }
         } else {
-          // User joins server
-          connection.nickname = response;
-
-          chatroom.addConnection(connection);
+          // User writes message
+          chatroom.addMessage(
+            new Message({ user: connection.nickname, text: response })
+          );
         }
-      } else {
-        // User writes message
-        chatroom.addMessage(
-          new Message({ user: connection.nickname, text: response })
-        );
-      }
-    });
+      })
+      .on('close', () => {
+        chatroom.removeConnection(connection);
+      });
   })
   .on('error', err => {
     // handle errors here
