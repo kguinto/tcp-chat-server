@@ -1,3 +1,5 @@
+const PORT = process.argv[2] || 3005;
+
 const { Server } = require('net');
 
 const Message = require('./Message');
@@ -28,7 +30,7 @@ const server = new Server()
             );
           } else {
             // User joins server
-            connection.nickname = response;
+            connection.setNickname(response);
 
             chatroom.addConnection(connection);
           }
@@ -48,6 +50,6 @@ const server = new Server()
     throw err;
   });
 
-server.listen(3005, () => {
+server.listen(PORT, () => {
   console.log('opened server on', server.address());
 });
