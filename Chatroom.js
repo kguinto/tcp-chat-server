@@ -26,6 +26,18 @@ class Chatroom {
   addMessage(message) {
     this.messages.push(message);
 
+    const userMentions = message.text.match(/@[\S]+/g);
+
+    if (userMentions.length) {
+      userMentions.forEach(userMentions => {
+        const nickname = userMentions.slice(1); // strip out @
+
+        if (this.hasNickname(nickname)) {
+          this.connections[nickname].socket.write('\x07');
+        }
+      });
+    }
+
     this.broadcast(message.format());
   }
 
