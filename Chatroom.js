@@ -15,6 +15,12 @@ class Chatroom {
     );
 
     this.broadcast(`${connection.nickname} has entered the chat!`);
+
+    const userList = this.getUserList();
+
+    connection.socket.write(
+      `${userList.length} users currently in chat:\n${userList.join(', ')}\n`
+    );
   }
 
   addMessage(message) {
@@ -41,6 +47,10 @@ class Chatroom {
 
       this.broadcast(`${connection.nickname} has disconnected.`);
     }
+  }
+
+  getUserList() {
+    return Object.keys(this.connections);
   }
 }
 
