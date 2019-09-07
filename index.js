@@ -1,4 +1,4 @@
-const net = require('net');
+const { Server } = require('net');
 
 const Message = require('./Message');
 const Connection = require('./Connection');
@@ -6,8 +6,8 @@ const Chatroom = require('./Chatroom');
 
 const chatroom = new Chatroom();
 
-const server = net
-  .createServer(socket => {
+const server = new Server()
+  .on('connection', socket => {
     console.log('connection established');
 
     socket.write('Welcome to my chat server! What is your nickname?\n');
