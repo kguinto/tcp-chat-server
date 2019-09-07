@@ -1,11 +1,10 @@
 const net = require('net');
+const Message = require('./Message');
+const Connection = require('./Connection');
 
-const users = {};
+const connections = {};
 
 const messages = [];
-
-const writeMessage = ({ user, created, text }) =>
-  `[${created}] ${user}: ${text}`;
 
 const server = net
   .createServer(socket => {
@@ -13,47 +12,47 @@ const server = net
 
     socket.write('Welcome to my chat server! What is your nickname?\n');
 
-    let username;
+    const connection = new Connection({ socket });
 
     socket.on('data', res => {
       const response = res.toString().trim();
 
-      if (!username) {
-        const usernameIsTaken = users[response];
+      if (!connection.nickname) {
+        // Check if nickname is taken
+        const nicknameIsTaken = connections[response];
 
-        if (usernameIsTaken) {
+        if (nicknameIsTaken) {
           socket.write(
             'That nickname is taken. Please choose another nickname.\n'
           );
         } else {
           // User joins server
+          connection.nickname = response;
 
-          users[response] = { socket };
-          username = response;
+          connections[response] = connection;
 
-          console.log(JSON.stringify(users, null, 2));
+          console.log(JSON.stringify(connections, null, 2));
 
           socket.write(
             messages
               .slice(-10)
-              .map(message => writeMessage(message))
+              .map(message => message.format())
               .join('\n') + '\n'
           );
 
-          Object.keys(users).forEach(name => {
-            const user = users[name];
+          Object.keys(connections).forEach(name => {
+            const conn = connections[name];
 
-            user.socket.write(`${username} has entered the chat!\n`);
+            conn.socket.write(`${connection.nickname} has entered the chat!\n`);
           });
         }
       } else {
         // User writes message
+        messages.push(
+          new Message({ user: connection.nickname, text: response })
+        );
 
-        messages.push({
-          created: Date.now(),
-          user: username,
-          text: response
-        });
+        console.log({ messages });
       }
     });
   })
@@ -62,7 +61,6 @@ const server = net
     throw err;
   });
 
-// Grab an arbitrary unused port.
 server.listen(3005, () => {
   console.log('opened server on', server.address());
 });
