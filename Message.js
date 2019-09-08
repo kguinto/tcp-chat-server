@@ -9,10 +9,9 @@ class Message {
   }
 
   format() {
-    return colorText(
-      this.color,
-      `[${this.created.toISOString()}] ${this.user}: ${this.text}`
-    );
+    const timestamp = `${this.created.getHours()}:${this.created.getMinutes()}:${this.created.getSeconds()}`;
+
+    return colorText(this.color, `[${timestamp}] <${this.user}>: ${this.text}`);
   }
 }
 
