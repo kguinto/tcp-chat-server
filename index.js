@@ -10,7 +10,7 @@ const chatroom = new Chatroom();
 
 const server = new Server()
   .on('connection', socket => {
-    console.log('connection established');
+    console.log('Connection established');
 
     socket.write('Welcome to my chat server! What is your nickname?\n');
 
@@ -37,7 +37,11 @@ const server = new Server()
         } else {
           // User writes message
           chatroom.addMessage(
-            new Message({ user: connection.nickname, text: response })
+            new Message({
+              color: connection.color,
+              user: connection.nickname,
+              text: response
+            })
           );
         }
       })

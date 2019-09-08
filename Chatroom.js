@@ -1,3 +1,5 @@
+const { colorText } = require('./color');
+
 class Chatroom {
   constructor() {
     this.connections = {};
@@ -19,14 +21,16 @@ class Chatroom {
     const userList = this.getUserList();
 
     connection.socket.write(
-      `${userList.length} users currently in chat:\n${userList.join(', ')}\n`
+      `${userList.length} users currently in chat:\n${userList
+        .map(user => `${colorText(user.color, user.nickname)}`)
+        .join(', ')}\n`
     );
   }
 
   addMessage(message) {
     this.messages.push(message);
 
-    const userMentions = message.text.match(/@[\S]+/g);
+    const userMentions = message.text.match(/@[\S]+/g) || [];
 
     if (userMentions.length) {
       userMentions.forEach(userMentions => {
@@ -62,7 +66,7 @@ class Chatroom {
   }
 
   getUserList() {
-    return Object.keys(this.connections);
+    return Object.keys(this.connections).map(key => this.connections[key]);
   }
 }
 

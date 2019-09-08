@@ -1,12 +1,18 @@
+const { colorText } = require('./color');
+
 class Message {
-  constructor({ user, text }) {
+  constructor({ color = '', user, text }) {
     this.user = user;
     this.created = new Date();
     this.text = text;
+    this.color = color;
   }
 
   format() {
-    return `[${this.created.toISOString()}] ${this.user}: ${this.text}`;
+    return colorText(
+      this.color,
+      `[${this.created.toISOString()}] ${this.user}: ${this.text}`
+    );
   }
 }
 
